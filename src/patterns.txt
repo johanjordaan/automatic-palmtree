@@ -1,0 +1,10 @@
+ALL <- (?P<name>.*)
+TIME <- \[(?P<time>\d\d:\d\d:\d\d)\]
+THREAD_LEVEL = \[(?P<thread>.*)\/(?P<level>.*)\]
+
+
+preparing_start_region,TIME(time) THREAD_LEVEL(thread,level): Preparing start region for dimension ALL
+
+    #[13:45:47] [Server thread/INFO]: Preparing start region for dimension minecraft:overworld
+
+    {'type': '', 'pattern': '},
