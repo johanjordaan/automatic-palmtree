@@ -13,7 +13,7 @@ BLOCK_COORDINATES = f"{BLOCK_COORDINATE('x')},[ ]*{BLOCK_COORDINATE('y')},[ ]*{B
 PLAYER_NAME = "(?P<player_name>[A-Za-z0-9_]+)"
 SHORT_HASH = "[a-z\\d]+"
 NPC_TYPE = "(?P<npc_type>[A-Za-z0-9_]+)"
-
+TYPE = "(?P<type>[A-Za-z0-9_]+)"
 
 patterns = [
     ## Help and interactiove input
@@ -31,8 +31,19 @@ patterns = [
     {'type': 'exception_line', 'pattern': f'[ \\t]*at .*'},                 # TODO Capture actual line info
 
     ## warnings
+    #
+
+    #[09:38:41] [Server thread/WARN]: Can't keep up! Is the server overloaded? Running 3790ms or 75 ticks behind
+    {'type': 'warning', 'pattern': f'{TIME} {THREAD_LEVEL}: Can\'t keep up! Is the server overloaded\? Running \\d+ms or \\d+ ticks behind'},
+
+    #[10:25:39] [Server thread/WARN]: Mismatch in destroy block pos: gg{x=-19, y=73, z=-258} gg{x=-20, y=73, z=-257}
+    {'type': 'warning','pattern': f'{TIME} {THREAD_LEVEL}: Mismatch in destroy block pos: .*'},
+    #[17:05:38] [Server thread/WARN]: Unable to find spawn biome
+    {'type': 'warning', 'pattern': f'{TIME} {THREAD_LEVEL}: Unable to find spawn biome'},
+
+
     # [20:09:43] [Server thread/WARN]: Horse (vehicle of UnicornTaimer) moved wrongly! 0.42138890999933665
-    {'type': 'warning', 'pattern': f'{TIME} {THREAD_LEVEL}: Horse \(vehicle of {PLAYER_NAME}\) moved wrongly!'},
+    {'type': 'warning', 'pattern': f'{TIME} {THREAD_LEVEL}: {TYPE} \(vehicle of {PLAYER_NAME}\) moved wrongly!'},
 
     # [13:45:22] [ServerMain/WARN]: Ambiguity between arguments [teleport, location] and [teleport, destination] with inputs: [0.1 -0.5 .9, 0 0 0]
     {'type': 'warning', 'pattern': f'{TIME} {THREAD_LEVEL}: (?P<message>Ambiguity between arguments .*)'},
@@ -47,10 +58,20 @@ patterns = [
     {'type': 'warning', 'pattern': f'{TIME} {THREAD_LEVEL}: Unknown or incomplete command, see below for error'},
 
     #[19:28:45] [Server thread/INFO]: <--[HERE]
-    {'type': 'warning', 'pattern': f'{TIME} {THREAD_LEVEL}: <--\[HERE\]'},
+    {'type': 'warning', 'pattern': f'{TIME} {THREAD_LEVEL}: .*<--\[HERE\]'},
+
+    #[18:32:51] [Server thread/INFO]: Unknown entity: minecraft:
+    {'type': 'warning', 'pattern': f'{TIME} {THREAD_LEVEL}: Unknown entity: minecraft:'},
+
+    #[18:27:26] [Server thread/INFO]: Expected whitespace to end one argument, but found trailing data
+    {'type': 'warning', 'pattern': f'{TIME} {THREAD_LEVEL}: Expected .*'},
+
 
     #[07:46:57] [Server thread/INFO]: No player was found
     {'type': 'warning', 'pattern': f'{TIME} {THREAD_LEVEL}: No player was found'},
+
+    #[18:26:55] [Server thread/INFO]: Incomplete (expected 3 coordinates)
+    {'type': 'warning', 'pattern': f'{TIME} {THREAD_LEVEL}: Incomplete .*'},
 
     ## Server startup
     ##
@@ -131,6 +152,8 @@ patterns = [
     #[19:33:00] [Server thread/INFO]: Skrag001 lost connection: Timed out
     {'type': 'disconnect', 'pattern': f'{TIME} {THREAD_LEVEL}: {PLAYER_NAME} lost connection: Timed out'},
 
+    #[15:51:42] [Server thread/INFO]: UnicornTaimer lost connection: You logged in from another location
+    {'type': 'disconnect', 'pattern': f'{TIME} {THREAD_LEVEL}: {PLAYER_NAME} lost connection: You logged in from another location'},
 
     #[07:42:12] [Server thread/INFO]: com.mojang.authlib.GameProfile@3e14f6ec[id=<null>,name=Skrag001,properties={},legacy=false] (/192.168.0.138:58006) lost connection: Disconnected
     {'type': 'disconnect','pattern': f'{TIME} {THREAD_LEVEL}: com.mojang.authlib.GameProfile@{SHORT_HASH}\[.*,name={PLAYER_NAME},.*\] \(\/{IP}:{PORT}\) lost connection: Disconnected'},
@@ -140,6 +163,8 @@ patterns = [
 
 
     # Commands
+    #[18:34:36] [Server thread/INFO]: Summoned new Slime
+    {'type': 'summoned', 'pattern': f'{TIME} {THREAD_LEVEL}: Summoned new {NPC_TYPE}'},
 
     #[07:45:25] [Server thread/INFO]: Teleported Skrag001 to -489.500000, 68.000000, -367.500000
     {'type': 'teleported', 'pattern': f'{TIME} {THREAD_LEVEL}: Teleported (?P<player_name>[A-Za-z0-9_]+) to {COORDINATES}'},
@@ -165,5 +190,16 @@ patterns = [
     #[19:19:42] [Server thread/INFO]: TurtleGroomer tried to swim in lava
     {'type': 'swim_lava','pattern': f'{TIME} {THREAD_LEVEL}: {PLAYER_NAME} tried to swim in lava'},
 
+    #[17:25:47] [Server thread/INFO]: Skrag001 was slain by Drowned
+    {'type': 'died','pattern': f'{TIME} {THREAD_LEVEL}: {PLAYER_NAME} was slain by {NPC_TYPE}'},
+
+    #[18:56:28] [Server thread/INFO]: UnicornTaimer suffocated in a wall
+    {'type': 'suffocated','pattern': f'{TIME} {THREAD_LEVEL}: {PLAYER_NAME} suffocated in a wall'},
+
+    #[08:30:16] [Server thread/INFO]: Skrag001 fell from a high place
+    {'type': 'fell','pattern': f'{TIME} {THREAD_LEVEL}: {PLAYER_NAME} fell from a high place'},
+
+    #[19:59:39] [Server thread/INFO]: TurtleGroomer was shot by Pillager
+    {'type': 'shot', 'pattern': f'{TIME} {THREAD_LEVEL}: {PLAYER_NAME} was shot by {NPC_TYPE}'},
 
 ]

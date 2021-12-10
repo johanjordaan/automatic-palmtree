@@ -1,9 +1,16 @@
 from unittest import TestCase
 
+import os
+
 import mclparser
 
 
 class TestParser(TestCase):
+    def test_parse_file(self):
+        for filename in os.listdir('fixtures'):
+            r = mclparser.parse_file(f'fixtures/{filename}')
+            print(f'fixtures/{filename} ->  Total: {r["count"]}, Unknown: {r["unknown_count"]}, Known: {r["known_count"]}')
+
     def test_parse_line(self):
         unknown_total = 0
         known_total = 0
